@@ -14,4 +14,4 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 EXPOSE 8080
-CMD ["sh", "-c", "php bin/console cache:clear --env=prod && php -S 0.0.0.0:$PORT -t public"]
+CMD ["sh", "-c", "php bin/console cache:warmup --env=prod 2>/dev/null || true && php bin/console doctrine:migrations:migrate --no-interaction --env=prod && php -S 0.0.0.0:$PORT -t public"]
