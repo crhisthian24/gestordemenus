@@ -15,7 +15,7 @@
         .layout{display:flex;min-height:100vh}
 
         /* Sidebar */
-        .sidebar{width:240px;background:#0f172a;display:flex;flex-direction:column;flex-shrink:0;position:fixed;height:100vh;overflow-y:auto}
+        .sidebar{width:240px;background:#0f172a;display:flex;flex-direction:column;flex-shrink:0;position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform .25s ease}
         .sidebar-brand{display:flex;align-items:center;gap:10px;padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
         .brand-icon{width:36px;height:36px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
         .brand-name{font-weight:700;font-size:.95rem;color:#fff}
@@ -34,25 +34,33 @@
         .logout-btn{color:#64748b;font-size:18px;display:flex;align-items:center;padding:4px;border-radius:6px;transition:color .15s}
         .logout-btn:hover{color:#fff}
 
+        /* RESPONSIVE: overlay para móvil */
+        .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;opacity:0;transition:opacity .25s ease}
+        .sidebar-overlay.active{opacity:1}
+
         /* Main */
         .main-wrap{flex:1;margin-left:240px;display:flex;flex-direction:column;min-height:100vh}
         .topbar{height:56px;background:#fff;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:10}
-        .breadcrumb{display:flex;align-items:center;gap:6px;flex:1;font-size:.8rem;color:#64748b}
+        .breadcrumb{display:flex;align-items:center;gap:6px;flex:1;font-size:.8rem;color:#64748b;min-width:0;overflow:hidden}
         .breadcrumb a:hover{color:#2563eb}
         .breadcrumb .sep{color:#cbd5e1}
-        .breadcrumb .current{color:#1e293b;font-weight:500}
-        .topbar-chip{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:20px}
+        .breadcrumb .current{color:#1e293b;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .topbar-chip{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:20px;flex-shrink:0}
         .main-content{flex:1;padding:24px}
 
+        /* RESPONSIVE: botón hamburguesa (oculto en desktop) */
+        .btn-menu{display:none;align-items:center;justify-content:center;width:36px;height:36px;background:none;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;color:#374151;font-size:20px;flex-shrink:0;transition:background .15s}
+        .btn-menu:hover{background:#f1f5f9}
+
         /* Page header */
-        .page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:16px}
+        .page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:16px;flex-wrap:wrap}
         .page-title{font-size:1.25rem;font-weight:700;color:#0f172a;display:flex;align-items:center;gap:8px}
         .page-title i{color:#2563eb;font-size:22px}
         .page-sub{color:#64748b;font-size:.8rem;margin-top:4px}
 
         /* Cards */
         .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:20px}
-        .card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f1f5f9}
+        .card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;gap:8px}
         .card-title{font-size:.9375rem;font-weight:600;color:#0f172a;display:flex;align-items:center;gap:7px}
         .card-title i{color:#2563eb;font-size:17px}
 
@@ -71,14 +79,15 @@
         .btn-xs{padding:3px 8px;font-size:.75rem}
 
         /* Alerts */
-        .alert{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:.875rem;border:1px solid transparent}
-        .alert i{font-size:18px;flex-shrink:0}
+        .alert{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:.875rem;border:1px solid transparent}
+        .alert i{font-size:18px;flex-shrink:0;margin-top:1px}
         .alert-success{background:#f0fdf4;border-color:#bbf7d0;color:#16a34a}
         .alert-danger{background:#fef2f2;border-color:#fecaca;color:#dc2626}
         .alert-info{background:#eff6ff;border-color:#bfdbfe;color:#2563eb}
 
         /* Tables */
-        .table{width:100%;border-collapse:collapse}
+        .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+        .table{width:100%;border-collapse:collapse;min-width:480px}
         .table th{text-align:left;padding:10px 16px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b;background:#f8fafc;border-bottom:1px solid #e2e8f0}
         .table td{padding:11px 16px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
         .table tbody tr:hover td{background:#f8fafc}
@@ -94,7 +103,7 @@
         .form-section-title{font-size:.875rem;font-weight:600;color:#0f172a;display:flex;align-items:center;gap:6px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #f1f5f9}
         .form-section-title i{color:#2563eb}
         .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-        .form-actions{display:flex;justify-content:flex-end;gap:10px;padding-top:16px;border-top:1px solid #f1f5f9;margin-top:4px}
+        .form-actions{display:flex;justify-content:flex-end;gap:10px;padding-top:16px;border-top:1px solid #f1f5f9;margin-top:4px;flex-wrap:wrap}
 
         /* Badges */
         .badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:600}
@@ -104,7 +113,7 @@
         .badge-secondary{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
 
         /* Actions cell */
-        .actions-cell{display:flex;gap:6px;align-items:center}
+        .actions-cell{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
         .inline-form{display:inline}
 
         /* Empty state */
@@ -138,10 +147,10 @@
         .hidden{display:none!important}
 
         /* Comparativa */
-        .comparativa{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;margin:12px 0}
-        .comparativa table{width:100%;font-size:.8125rem}
+        .comparativa{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 16px;margin:12px 0;overflow-x:auto}
+        .comparativa table{width:100%;font-size:.8125rem;min-width:280px}
         .comparativa td{padding:4px 8px}
-        .comparativa td:first-child{color:#64748b;font-weight:500;width:160px}
+        .comparativa td:first-child{color:#64748b;font-weight:500;width:140px}
         .comparativa td:last-child{font-weight:600;font-family:monospace}
 
         /* Version timeline */
@@ -151,16 +160,16 @@
         .tl-item:last-child::before{display:none}
         .tl-dot{width:28px;height:28px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;font-size:14px;color:#94a3b8}
         .tl-dot.current{background:#f0fdf4;color:#16a34a}
-        .tl-content{flex:1}
-        .tl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+        .tl-content{flex:1;min-width:0}
+        .tl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px}
         .tl-date{font-size:.75rem;color:#94a3b8}
         .tl-body{background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:.8125rem}
-        .tl-row{display:flex;gap:8px;margin-bottom:4px;align-items:center}
+        .tl-row{display:flex;gap:8px;margin-bottom:4px;align-items:flex-start;flex-wrap:wrap}
         .tl-row:last-child{margin-bottom:0}
         .tl-label{color:#64748b;min-width:120px;display:flex;align-items:center;gap:4px}
         .tl-label i{font-size:13px}
-        .tl-val{font-family:monospace;font-size:.78rem;color:#0f172a}
-        .tl-actions{display:flex;gap:6px;margin-top:10px}
+        .tl-val{font-family:monospace;font-size:.78rem;color:#0f172a;word-break:break-all}
+        .tl-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 
         /* Login */
         .login-page{display:flex;min-height:100vh}
@@ -193,6 +202,144 @@
         .mt-3{margin-top:12px}
         @keyframes spin{to{transform:rotate(360deg)}}
         .spin{animation:spin .8s linear infinite;display:inline-block}
+
+        /* =============================================
+           RESPONSIVE — breakpoint principal: 768px
+           ============================================= */
+        @media (max-width: 768px) {
+            /* Sidebar: fuera de pantalla por defecto */
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 4px 0 24px rgba(0,0,0,.3);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* Overlay visible en móvil cuando sidebar está abierta */
+            .sidebar-overlay {
+                display: block;
+            }
+            .sidebar-overlay.active {
+                pointer-events: all;
+            }
+
+            /* Main ocupa todo el ancho */
+            .main-wrap {
+                margin-left: 0;
+            }
+
+            /* Topbar: mostrar botón hamburguesa */
+            .btn-menu {
+                display: flex;
+            }
+
+            /* Padding reducido en contenido */
+            .main-content {
+                padding: 16px;
+            }
+
+            /* Stats: máximo 2 columnas en móvil */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            /* Form rows: columna única */
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            /* Form section: menos padding */
+            .form-section {
+                padding: 14px;
+            }
+
+            /* Form actions: botones apilados */
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Page header: apilado */
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+                margin-bottom: 16px;
+            }
+            .page-header .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Topbar: ocultar chip de usuario (ya está en sidebar) */
+            .topbar-chip {
+                display: none;
+            }
+
+            /* Topbar padding */
+            .topbar {
+                padding: 0 16px;
+                gap: 10px;
+            }
+
+            /* Card header: acciones debajo del título si no caben */
+            .card-header {
+                padding: 12px 16px;
+            }
+
+            /* Drop zone: menos padding */
+            .drop-zone {
+                padding: 20px 16px;
+            }
+
+            /* Timeline: reducir gap de labels */
+            .tl-label {
+                min-width: 100px;
+            }
+
+            /* Login: pantalla completa vertical */
+            .login-page {
+                flex-direction: column;
+            }
+            .login-left {
+                width: 100%;
+                padding: 32px 24px;
+            }
+            .login-features {
+                display: none; /* Ocultar features en móvil para ahorrar espacio */
+            }
+            .login-right {
+                padding: 24px 16px;
+                align-items: flex-start;
+            }
+            .login-card {
+                padding: 24px 20px;
+            }
+        }
+
+        /* Breakpoint extra pequeño: 480px */
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stat-card {
+                padding: 12px;
+            }
+            .stat-value {
+                font-size: 1rem;
+            }
+            .page-title {
+                font-size: 1.1rem;
+            }
+            .main-content {
+                padding: 12px;
+            }
+        }
     </style>
     {% block stylesheets %}{% endblock %}
 </head>
@@ -200,7 +347,11 @@
 
 {% if app.user %}
 <div class="layout">
-    <aside class="sidebar">
+
+    {# RESPONSIVE: overlay para cerrar sidebar tocando fuera #}
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <div class="brand-icon"><i class="ti ti-file-certificate"></i></div>
             <div>
@@ -210,12 +361,12 @@
         </div>
         <nav class="sidebar-nav">
             <div class="nav-label">Principal</div>
-            <a href="{{ path('app_explorador', {id: 1}) }}" class="nav-item {% if app.request.attributes.get('_route') starts with 'app_explorador' or app.request.attributes.get('_route') starts with 'app_upload' or app.request.attributes.get('_route') starts with 'app_historial' %}active{% endif %}">
+            <a href="{{ path('app_explorador', {id: 1}) }}" class="nav-item {% if app.request.attributes.get('_route') starts with 'app_explorador' or app.request.attributes.get('_route') starts with 'app_upload' or app.request.attributes.get('_route') starts with 'app_historial' %}active{% endif %}" onclick="closeSidebar()">
                 <i class="ti ti-files"></i><span>Explorador</span>
             </a>
             {% if is_granted('ROLE_ADMIN') %}
             <div class="nav-label">Administración</div>
-            <a href="{{ path('app_empresa_index') }}" class="nav-item {% if app.request.attributes.get('_route') starts with 'app_empresa' %}active{% endif %}">
+            <a href="{{ path('app_empresa_index') }}" class="nav-item {% if app.request.attributes.get('_route') starts with 'app_empresa' %}active{% endif %}" onclick="closeSidebar()">
                 <i class="ti ti-building-factory-2"></i><span>Empresas</span>
             </a>
             {% endif %}
@@ -232,6 +383,10 @@
 
     <div class="main-wrap">
         <header class="topbar">
+            {# RESPONSIVE: botón hamburguesa, solo visible en móvil vía CSS #}
+            <button class="btn-menu" id="btnMenu" onclick="toggleSidebar()" aria-label="Abrir menú">
+                <i class="ti ti-menu-2"></i>
+            </button>
             <div class="breadcrumb">{% block breadcrumb %}{% endblock %}</div>
             <div class="topbar-chip"><i class="ti ti-user"></i>{{ app.user.userIdentifier }}</div>
         </header>
@@ -248,6 +403,36 @@
         </main>
     </div>
 </div>
+
+{# RESPONSIVE: script para sidebar en móvil #}
+<script>
+function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    var isOpen = sidebar.classList.contains('open');
+    if (isOpen) {
+        closeSidebar();
+    } else {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+function closeSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+// Cerrar sidebar al redimensionar a desktop
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        closeSidebar();
+    }
+});
+</script>
+
 {% else %}
     {% block full_page %}{% endblock %}
 {% endif %}
