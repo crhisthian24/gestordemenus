@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Archivos de {{ empresa.nombre }}{% endblock %}
+
+{% block body %}
+<div style="padding:20px">
+
+    <h1>📁 Archivos de {{ empresa.nombre }}</h1>
+
+    <a href="{{ path('empresa_index') }}">⬅ Volver</a>
+
+    <hr>
+
+    <h3>Listado de archivos en SFTP</h3>
+
+    {% if files is empty %}
+        <p>No hay archivos en el servidor.</p>
+    {% else %}
+        <table border="1" cellpadding="10">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                    {% if file.type == 'file' and file.path ends with '.pdf' %}
+                        <tr>
+                            <td>{{ file.path }}</td>
+                            <td>{{ file.type }}</td>
+                            <td>
+                                <a href="#">⬇ Descargar</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+</div>
+{% endblock %}

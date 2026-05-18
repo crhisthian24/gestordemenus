@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nueva empresa{% endblock %}
+{% block breadcrumb %}
+    <a href="{{ path('app_empresa_index') }}">Empresas</a>
+    <span class="sep"><i class="ti ti-chevron-right"></i></span>
+    <span class="current">Nueva empresa</span>
+{% endblock %}
+{% block body %}
+<div class="page-header">
+    <div>
+        <div class="page-title"><i class="ti ti-plus"></i> Nueva empresa</div>
+        <div class="page-sub">Configura la conexión SFTP</div>
+    </div>
+</div>
+<div class="card" style="padding:24px">
+    {{ form_start(form, {attr: {novalidate: true}}) }}
+        {% include 'empresa/_form.html.twig' %}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

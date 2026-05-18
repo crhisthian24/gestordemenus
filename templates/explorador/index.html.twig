@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ empresa.nombre }} — Archivos{% endblock %}
+{% block breadcrumb %}
+    <span class="current"><i class="ti ti-files"></i> {{ empresa.nombre }}</span>
+{% endblock %}
+{% block body %}
+<div class="page-header">
+    <div>
+        <div class="page-title"><i class="ti ti-files"></i> {{ empresa.nombre }}</div>
+        <div class="page-sub"><i class="ti ti-server"></i> {{ empresa.host }}:{{ empresa.puerto }} &nbsp;·&nbsp; {{ empresa.rutaRemota }}</div>
+    </div>
+    <div style="display:flex;gap:8px">
+        <a href="{{ path('app_historial', {id: empresa.id}) }}" class="btn btn-outline"><i class="ti ti-history"></i> Historial</a>
+        <a href="{{ path('app_upload_pdf', {id: empresa.id}) }}" class="btn btn-primary"><i class="ti ti-upload"></i> Subir PDF</a>
+    </div>
+</div>
+
+{% for type, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ type == 'success' ? 'success' : 'danger' }}">
+            <i class="ti ti-{{ type == 'success' ? 'circle-check' : 'alert-circle' }}"></i>{{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title"><i class="ti ti-file-type-pdf"></i> Archivos PDF en el servidor</div>
+        <span class="badge badge-success"><i class="ti ti-wifi"></i> Conectado</span>
+    </div>
+    {% if archivos is empty %}
+        <div class="empty-state"><i class="ti ti-folder-open"></i><p>No hay archivos PDF en este directorio.</p></div>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Tamaño</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for archivo in archivos %}
+                <tr>
+                    <td><i class="ti ti-file-type-pdf" style="color:#dc2626;margin-right:6px"></i>{{ archivo.path }}</td>
+                    <td class="text-muted">{{ archivo.fileSize is not null ? (archivo.fileSize / 1024)|round(1) ~ ' KB' : '—' }}</td>
+                    <td>
+                        <div class="actions-cell">
+                            <a href="{{ path('app_download_pdf', {id: empresa.id, filename: archivo.path}) }}" class="btn btn-xs btn-outline"><i class="ti ti-download"></i> Descargar</a>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <form class="inline-form" method="post" action="{{ path('app_delete_pdf', {id: empresa.id, filename: archivo.path}) }}" onsubmit="return confirm('¿Eliminar «{{ archivo.path }}»?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_' ~ archivo.path) }}">
+                                    <button class="btn btn-xs btn-danger"><i class="ti ti-trash"></i> Eliminar</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

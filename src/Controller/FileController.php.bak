@@ -1,0 +1,85 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Empresa;
+use App\Service\SftpService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Routing\Attribute\Route;
+
+final class FileController extends AbstractController
+{
+    #[Route('/empresa/{id}/archivos', name: 'empresa_archivos')]
+    public function list(Empresa $empresa, SftpService $sftpService): Response
+    {
+        $filesystem = $sftpService->connect($empresa);
+
+        $files = $filesystem->listContents('/', false);
+
+        return $this->render('sftp/list.html.twig', [
+            'empresa' => $empresa,
+            'files' => $files,
+        ]);
+    }
+
+    #[Route('/empresa/{id}/upload', name: 'file_upload', methods: ['POST'])]
+    public function upload(
+        Request $request,
+        Empresa $empresa,
+        SftpService $sftpService,
+        EntityManagerInterface $em
+    ): Response {
+
+        $file = $request->files->get('file');
+
+        if (!$file || $file->getClientOriginalExtension() !== 'pdf') {
+            throw new \Exception('Solo se permiten archivos PDF');
+        }
+
+        $filesystem = $sftpService->connect($empresa);
+
+        $originalName = $file->getClientOriginalName();
+        $stream = fopen($file->getPathname(), 'r');
+
+        // 🔥 VERSIONADO SI EXISTE
+        if ($filesystem->fileExists($originalName)) {
+
+            $backupName = pathinfo($originalName, PATHINFO_FILENAME)
+                . '_' . date('Y-m-d_H-i-s') . '.pdf';
+
+            $filesystem->move($originalName, $backupName);
+        }
+
+        // 🔥 SUBIR NUEVO
+        $filesystem->writeStream($originalName, $stream);
+
+        fclose($stream);
+
+        return $this->redirectToRoute('empresa_archivos', [
+            'id' => $empresa->getId()
+        ]);
+    }
+
+    #[Route('/empresa/{id}/download/{filename}', name: 'file_download')]
+    public function download(
+        Empresa $empresa,
+        string $filename,
+        SftpService $sftpService
+    ): Response {
+
+        $filesystem = $sftpService->connect($empresa);
+
+        $stream = $filesystem->readStream($filename);
+
+        return new StreamedResponse(function () use ($stream) {
+            fpassthru($stream);
+        }, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"'
+        ]);
+    }
+}

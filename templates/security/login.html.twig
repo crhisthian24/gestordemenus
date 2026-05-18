@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block full_page %}
+<div class="login-page">
+    <div class="login-left">
+        <div class="login-logo"><i class="ti ti-file-certificate"></i></div>
+        <div class="login-title">DocPortal <span>SFTP</span></div>
+        <div class="login-sub">Gestión documental segura para servidores remotos</div>
+        <ul class="login-features">
+            <li><i class="ti ti-lock"></i>Contraseñas cifradas AES-256</li>
+            <li><i class="ti ti-history"></i>Control de versiones automático</li>
+            <li><i class="ti ti-file-check"></i>Solo archivos PDF verificados</li>
+            <li><i class="ti ti-clipboard-list"></i>Auditoría completa de acciones</li>
+        </ul>
+    </div>
+    <div class="login-right">
+        <div class="login-card">
+            <h2>Acceder al portal</h2>
+            <p class="login-card-sub">Introduce tus credenciales para continuar</p>
+            {% if error %}
+                <div class="alert alert-danger"><i class="ti ti-alert-circle"></i>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+            <form method="post">
+                <div class="form-group">
+                    <label class="form-label" for="inputEmail"><i class="ti ti-mail"></i> Correo electrónico</label>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus placeholder="usuario@empresa.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="inputPassword"><i class="ti ti-lock"></i> Contraseña</label>
+                    <div class="input-wrap">
+                        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required placeholder="••••••••">
+                        <button type="button" class="eye-btn" onclick="togglePwd()"><i class="ti ti-eye" id="eye-icon"></i></button>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" id="remember" name="_remember_me">
+                    <label for="remember">Mantener sesión iniciada</label>
+                </div>
+                <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+                <button class="btn btn-primary btn-block" type="submit"><i class="ti ti-login"></i>Iniciar sesión</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+function togglePwd(){
+    const i=document.getElementById('inputPassword'),e=document.getElementById('eye-icon');
+    i.type=i.type==='password'?'text':'password';
+    e.classList.toggle('ti-eye');e.classList.toggle('ti-eye-off');
+}
+</script>
+{% endblock %}

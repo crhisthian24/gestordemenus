@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+{% block title %}Subir PDF — {{ empresa.nombre }}{% endblock %}
+{% block breadcrumb %}
+    <a href="{{ path('app_explorador', {id: empresa.id}) }}">{{ empresa.nombre }}</a>
+    <span class="sep"><i class="ti ti-chevron-right"></i></span>
+    <span class="current">Subir PDF</span>
+{% endblock %}
+{% block body %}
+<div class="page-header">
+    <div>
+        <div class="page-title"><i class="ti ti-upload"></i> Subir PDF</div>
+        <div class="page-sub">{{ empresa.nombre }}</div>
+    </div>
+    <a href="{{ path('app_explorador', {id: empresa.id}) }}" class="btn btn-outline"><i class="ti ti-arrow-left"></i> Volver</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start">
+    <div class="card" style="padding:24px">
+        <div class="alert alert-info"><i class="ti ti-info-circle"></i> Si el archivo ya existe en el servidor, la versión actual se renombrará con sello de fecha y se subirá la nueva con el nombre original.</div>
+
+        {{ form_start(form, {attr: {enctype: 'multipart/form-data', novalidate: 'novalidate', id: 'upload-form'}}) }}
+
+        <div class="drop-zone" id="dropZone">
+            <i class="ti ti-cloud-upload drop-icon"></i>
+            <div class="drop-text">Arrastra tu PDF aquí o haz clic para seleccionar</div>
+            <div class="drop-hint">Solo PDF · Máximo 10 MB</div>
+            {{ form_widget(form.pdf, {attr: {id: 'upload_pdf_pdf', class: 'hidden-input'}}) }}
+            {{ form_errors(form.pdf) }}
+        </div>
+
+        <div id="file-preview" class="file-preview hidden">
+            <i class="ti ti-file-type-pdf"></i>
+            <div>
+                <div class="file-preview-name" id="prev-name"></div>
+                <div class="file-preview-size" id="prev-size"></div>
+            </div>
+        </div>
+
+        <div id="comparativa" class="comparativa hidden">
+            <strong style="font-size:.8rem;color:#374151;display:block;margin-bottom:8px">Comparativa de tamaños</strong>
+            <table>
+                <tr>
+                    <td>Archivo a subir:</td>
+                    <td id="nuevo-tamano">—</td>
+                </tr>
+                <tr>
+                    <td>Archivo en servidor:</td>
+                    <td><span id="servidor-tamano">—</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="margin-top:16px;display:flex;gap:10px">
+            <button type="submit" class="btn btn-primary" id="upload-btn" disabled><i class="ti ti-upload"></i> Subir archivo</button>
+            <a href="{{ path('app_explorador', {id: empresa.id}) }}" class="btn btn-outline"><i class="ti ti-x"></i> Cancelar</a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <div class="card" style="padding:20px">
+        <div class="card-title" style="margin-bottom:12px"><i class="ti ti-info-circle"></i> Política de versiones</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;font-size:.8125rem;color:#374151">
+            <li style="display:flex;gap:8px"><i class="ti ti-check" style="color:#16a34a;flex-shrink:0"></i>Solo se permiten archivos PDF</li>
+            <li style="display:flex;gap:8px"><i class="ti ti-check" style="color:#16a34a;flex-shrink:0"></i>Máximo 10 MB por archivo</li>
+            <li style="display:flex;gap:8px"><i class="ti ti-history" style="color:#2563eb;flex-shrink:0"></i>Si el archivo existe, se crea backup automático</li>
+            <li style="display:flex;gap:8px"><i class="ti ti-database" style="color:#2563eb;flex-shrink:0"></i>Cada subida queda registrada en el historial</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+document.addEventListener('turbo:load', function () {
+    var dropZone  = document.getElementById('dropZone');
+    var input     = document.getElementById('upload_pdf_pdf');
+    var preview   = document.getElementById('file-preview');
+    var prevName  = document.getElementById('prev-name');
+    var prevSize  = document.getElementById('prev-size');
+    var uploadBtn = document.getElementById('upload-btn');
+    var comp      = document.getElementById('comparativa');
+
+    function formatKB(bytes) { return (bytes / 1024).toFixed(1) + ' KB'; }
+
+    function showFile(file) {
+        prevName.textContent = file.name;
+        prevSize.textContent = formatKB(file.size);
+        preview.classList.remove('hidden');
+        document.getElementById('nuevo-tamano').textContent = formatKB(file.size);
+        comp.classList.remove('hidden');
+        dropZone.classList.add('has-file');
+        uploadBtn.disabled = false;
+
+        var nombre = file.name.replace(/[^A-Za-z0-9.\-_]/g, '_');
+        fetch('/explorador/{{ empresa.id }}/tamano/' + encodeURIComponent(nombre))
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var cel = document.getElementById('servidor-tamano');
+                if (data.existe) {
+                    cel.textContent = formatKB(data.tamano);
+                    cel.style.color = file.size > data.tamano ? '#d97706' : file.size < data.tamano ? '#dc2626' : '#16a34a';
+                } else {
+                    cel.textContent = 'No existe (subida nueva)';
+                    cel.style.color = '#94a3b8';
+                }
+            });
+    }
+
+    if (input) {
+        input.addEventListener('change', function () { if (this.files[0]) showFile(this.files[0]); });
+    }
+    if (dropZone) {
+        dropZone.addEventListener('click', function() { if(input) input.click(); });
+        dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            var file = e.dataTransfer.files[0];
+            if (file) {
+                var dt = new DataTransfer();
+                dt.items.add(file);
+                input.files = dt.files;
+                showFile(file);
+            }
+        });
+    }
+
+    document.getElementById('upload-form').addEventListener('submit', function() {
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Subiendo...';
+    });
+});
+</script>
+{% endblock %}

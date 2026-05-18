@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+{% block title %}Historial — {{ empresa.nombre }}{% endblock %}
+{% block breadcrumb %}
+    <a href="{{ path('app_explorador', {id: empresa.id}) }}">{{ empresa.nombre }}</a>
+    <span class="sep"><i class="ti ti-chevron-right"></i></span>
+    <span class="current">Historial</span>
+{% endblock %}
+{% block body %}
+<div class="page-header">
+    <div>
+        <div class="page-title"><i class="ti ti-history"></i> Historial de subidas</div>
+        <div class="page-sub">{{ empresa.nombre }}</div>
+    </div>
+    <a href="{{ path('app_explorador', {id: empresa.id}) }}" class="btn btn-outline"><i class="ti ti-arrow-left"></i> Volver</a>
+</div>
+
+<div class="card">
+    {% if logs is empty %}
+        <div class="empty-state"><i class="ti ti-clipboard-list"></i><p>No hay registros de subidas.</p></div>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Archivo original</th>
+                    <th>Acción</th>
+                    <th>Backup generado</th>
+                    <th>Descargar backup</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td class="text-muted text-sm">{{ log.createdAt|date('d/m/Y H:i:s') }}</td>
+                    <td><code>{{ log.usuario }}</code></td>
+                    <td><i class="ti ti-file-type-pdf" style="color:#dc2626;margin-right:4px"></i>{{ log.archivoOriginal }}</td>
+                    <td>
+                        {% if log.accion == 'subida_con_backup' %}
+                            <span class="badge badge-info"><i class="ti ti-history"></i> Con backup</span>
+                        {% else %}
+                            <span class="badge badge-success"><i class="ti ti-plus"></i> Nueva subida</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log.archivoBackup ?? '—' }}</td>
+                    <td>
+                        {% if log.archivoBackup %}
+                            <a href="{{ path('app_download_backup', {id: empresa.id, filename: log.archivoBackup}) }}" class="btn btn-xs btn-outline"><i class="ti ti-download"></i> Descargar</a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}
