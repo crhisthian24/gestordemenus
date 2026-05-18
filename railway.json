@@ -2,7 +2,9 @@
   "build": {
     "buildCommand": "composer install --no-dev --optimize-autoloader"
   },
+  
   "deploy": {
     "startCommand": "php bin/console cache:clear --env=prod && php -S 0.0.0.0:$PORT -t public"
   }
+
 }
