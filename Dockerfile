@@ -12,6 +12,7 @@ COPY . .
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN rm -rf var/cache/*
 
 EXPOSE 8080
 CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
