@@ -31,7 +31,7 @@
     {% if archivos is empty %}
         <div class="empty-state"><i class="ti ti-folder-open"></i><p>No hay archivos PDF en este directorio.</p></div>
     {% else %}
-        {{-- Vista desktop: tabla --}}
+        {# Vista desktop: tabla #}
         <div class="table-wrap hide-mobile">
             <table class="table">
                 <thead>
@@ -63,7 +63,7 @@
             </table>
         </div>
 
-        {{-- Vista móvil: cards --}}
+        {# Vista móvil: cards #}
         <div class="file-list hide-desktop">
             {% for archivo in archivos %}
             <div class="file-card">
