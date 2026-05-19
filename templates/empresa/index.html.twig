@@ -9,51 +9,91 @@
         <div class="page-title"><i class="ti ti-building-factory-2"></i> Gestión de empresas</div>
         <div class="page-sub">CRUD y configuración de conexiones SFTP</div>
     </div>
-    <a href="{{ path('app_empresa_new') }}" class="btn btn-primary"><i class="ti ti-plus"></i> Nueva empresa</a>
+    <a href="{{ path('app_empresa_new') }}" class="btn btn-primary"><i class="ti ti-plus"></i> <span class="btn-label">Nueva empresa</span></a>
 </div>
+
 <div class="card">
     {% if empresas is empty %}
         <div class="empty-state"><i class="ti ti-building-factory-2"></i><p>No hay empresas configuradas.</p></div>
     {% else %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Empresa</th>
-                    <th>Host SFTP</th>
-                    <th>Puerto</th>
-                    <th>Usuario</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for empresa in empresas %}
-                <tr>
-                    <td><strong>{{ empresa.nombre }}</strong></td>
-                    <td><code>{{ empresa.host }}</code></td>
-                    <td><code>{{ empresa.puerto }}</code></td>
-                    <td><code>{{ empresa.usuario }}</code></td>
-                    <td>
-                        {% if empresa.activo %}
-                            <span class="badge badge-success"><i class="ti ti-check"></i> Activa</span>
-                        {% else %}
-                            <span class="badge badge-danger"><i class="ti ti-x"></i> Inactiva</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div class="actions-cell">
-                            <a href="{{ path('app_explorador', {id: empresa.id}) }}" class="btn btn-xs btn-outline" title="Ver archivos"><i class="ti ti-files"></i></a>
-                            <a href="{{ path('app_empresa_edit', {id: empresa.id}) }}" class="btn btn-xs btn-outline" title="Editar"><i class="ti ti-edit"></i></a>
-                            <form class="inline-form" method="post" action="{{ path('app_empresa_delete', {id: empresa.id}) }}" onsubmit="return confirm('¿Eliminar «{{ empresa.nombre }}»?')">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ empresa.id) }}">
-                                <button class="btn btn-xs btn-danger" title="Eliminar"><i class="ti ti-trash"></i></button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {# Desktop #}
+        <div class="table-wrap hide-mobile">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Host SFTP</th>
+                        <th>Puerto</th>
+                        <th>Usuario</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for empresa in empresas %}
+                    <tr>
+                        <td><strong>{{ empresa.nombre }}</strong></td>
+                        <td><code>{{ empresa.host }}</code></td>
+                        <td><code>{{ empresa.puerto }}</code></td>
+                        <td><code>{{ empresa.usuario }}</code></td>
+                        <td>
+                            {% if empresa.activo %}
+                                <span class="badge badge-success"><i class="ti ti-check"></i> Activa</span>
+                            {% else %}
+                                <span class="badge badge-danger"><i class="ti ti-x"></i> Inactiva</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <a href="{{ path('app_explorador', {id: empresa.id}) }}" class="btn btn-xs btn-outline" title="Ver archivos"><i class="ti ti-files"></i></a>
+                                <a href="{{ path('app_empresa_edit', {id: empresa.id}) }}" class="btn btn-xs btn-outline" title="Editar"><i class="ti ti-edit"></i></a>
+                                <form class="inline-form" method="post" action="{{ path('app_empresa_delete', {id: empresa.id}) }}" onsubmit="return confirm('¿Eliminar «{{ empresa.nombre }}»?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ empresa.id) }}">
+                                    <button class="btn btn-xs btn-danger" title="Eliminar"><i class="ti ti-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {# Móvil: cards #}
+        <div class="hide-desktop" style="padding:8px;display:flex;flex-direction:column;gap:8px">
+            {% for empresa in empresas %}
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <strong style="font-size:.9375rem">{{ empresa.nombre }}</strong>
+                    {% if empresa.activo %}
+                        <span class="badge badge-success"><i class="ti ti-check"></i> Activa</span>
+                    {% else %}
+                        <span class="badge badge-danger"><i class="ti ti-x"></i> Inactiva</span>
+                    {% endif %}
+                </div>
+                <div style="font-size:.75rem;color:#64748b;margin-bottom:4px"><i class="ti ti-server" style="margin-right:4px"></i>{{ empresa.host }}:{{ empresa.puerto }}</div>
+                <div style="font-size:.75rem;color:#64748b;margin-bottom:12px"><i class="ti ti-user" style="margin-right:4px"></i>{{ empresa.usuario }}</div>
+                <div style="display:flex;gap:8px">
+                    <a href="{{ path('app_explorador', {id: empresa.id}) }}" class="btn btn-sm btn-outline" style="flex:1;justify-content:center"><i class="ti ti-files"></i> Archivos</a>
+                    <a href="{{ path('app_empresa_edit', {id: empresa.id}) }}" class="btn btn-sm btn-outline" style="flex:1;justify-content:center"><i class="ti ti-edit"></i> Editar</a>
+                    <form method="post" action="{{ path('app_empresa_delete', {id: empresa.id}) }}" onsubmit="return confirm('¿Eliminar «{{ empresa.nombre }}»?')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ empresa.id) }}">
+                        <button class="btn btn-sm btn-danger"><i class="ti ti-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     {% endif %}
 </div>
+
+<style>
+.hide-mobile { display: block; }
+.hide-desktop { display: none; }
+@media (max-width: 768px) {
+    .hide-mobile { display: none; }
+    .hide-desktop { display: block; }
+    .btn-label { display: none; }
+}
+</style>
 {% endblock %}

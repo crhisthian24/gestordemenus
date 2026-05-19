@@ -11,49 +11,91 @@
         <div class="page-title"><i class="ti ti-history"></i> Historial de subidas</div>
         <div class="page-sub">{{ empresa.nombre }}</div>
     </div>
-    <a href="{{ path('app_explorador', {id: empresa.id}) }}" class="btn btn-outline"><i class="ti ti-arrow-left"></i> Volver</a>
+    <a href="{{ path('app_explorador', {id: empresa.id}) }}" class="btn btn-outline"><i class="ti ti-arrow-left"></i> <span class="btn-label">Volver</span></a>
 </div>
 
 <div class="card">
     {% if logs is empty %}
         <div class="empty-state"><i class="ti ti-clipboard-list"></i><p>No hay registros de subidas.</p></div>
     {% else %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Usuario</th>
-                    <th>Archivo original</th>
-                    <th>Acción</th>
-                    <th>Backup generado</th>
-                    <th>Descargar backup</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in logs %}
-                <tr>
-                    <td class="text-muted text-sm">{{ log.createdAt|date('d/m/Y H:i:s') }}</td>
-                    <td><code>{{ log.usuario }}</code></td>
-                    <td><i class="ti ti-file-type-pdf" style="color:#dc2626;margin-right:4px"></i>{{ log.archivoOriginal }}</td>
-                    <td>
-                        {% if log.accion == 'subida_con_backup' %}
-                            <span class="badge badge-info"><i class="ti ti-history"></i> Con backup</span>
-                        {% else %}
-                            <span class="badge badge-success"><i class="ti ti-plus"></i> Nueva subida</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ log.archivoBackup ?? '—' }}</td>
-                    <td>
-                        {% if log.archivoBackup %}
-                            <a href="{{ path('app_download_backup', {id: empresa.id, filename: log.archivoBackup}) }}" class="btn btn-xs btn-outline"><i class="ti ti-download"></i> Descargar</a>
-                        {% else %}
-                            <span class="text-muted">—</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {# Desktop #}
+        <div class="table-wrap hide-mobile">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Archivo original</th>
+                        <th>Acción</th>
+                        <th>Backup generado</th>
+                        <th>Descargar backup</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="text-muted text-sm">{{ log.createdAt|date('d/m/Y H:i:s') }}</td>
+                        <td><code>{{ log.usuario }}</code></td>
+                        <td><i class="ti ti-file-type-pdf" style="color:#dc2626;margin-right:4px"></i>{{ log.archivoOriginal }}</td>
+                        <td>
+                            {% if log.accion == 'subida_con_backup' %}
+                                <span class="badge badge-info"><i class="ti ti-history"></i> Con backup</span>
+                            {% else %}
+                                <span class="badge badge-success"><i class="ti ti-plus"></i> Nueva subida</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ log.archivoBackup ?? '—' }}</td>
+                        <td>
+                            {% if log.archivoBackup %}
+                                <a href="{{ path('app_download_backup', {id: empresa.id, filename: log.archivoBackup}) }}" class="btn btn-xs btn-outline"><i class="ti ti-download"></i> Descargar</a>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {# Móvil: cards #}
+        <div class="hide-desktop" style="padding:8px;display:flex;flex-direction:column;gap:8px">
+            {% for log in logs %}
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+                    <span class="text-muted text-sm">{{ log.createdAt|date('d/m/Y H:i:s') }}</span>
+                    {% if log.accion == 'subida_con_backup' %}
+                        <span class="badge badge-info"><i class="ti ti-history"></i> Con backup</span>
+                    {% else %}
+                        <span class="badge badge-success"><i class="ti ti-plus"></i> Nueva subida</span>
+                    {% endif %}
+                </div>
+                <div style="font-size:.8125rem;margin-bottom:4px">
+                    <i class="ti ti-file-type-pdf" style="color:#dc2626;margin-right:4px"></i>
+                    <strong style="word-break:break-all">{{ log.archivoOriginal }}</strong>
+                </div>
+                <div style="font-size:.75rem;color:#64748b;margin-bottom:8px">
+                    <i class="ti ti-user" style="margin-right:4px"></i>{{ log.usuario }}
+                </div>
+                {% if log.archivoBackup %}
+                <div style="font-size:.75rem;color:#64748b;margin-bottom:8px;word-break:break-all">
+                    <i class="ti ti-history" style="margin-right:4px;color:#2563eb"></i>{{ log.archivoBackup }}
+                </div>
+                <a href="{{ path('app_download_backup', {id: empresa.id, filename: log.archivoBackup}) }}" class="btn btn-sm btn-outline" style="width:100%;justify-content:center"><i class="ti ti-download"></i> Descargar backup</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
     {% endif %}
 </div>
+
+<style>
+.hide-mobile { display: block; }
+.hide-desktop { display: none; }
+@media (max-width: 768px) {
+    .hide-mobile { display: none; }
+    .hide-desktop { display: block; }
+    .btn-label { display: none; }
+}
+</style>
 {% endblock %}
