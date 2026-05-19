@@ -58,8 +58,7 @@ class SftpService
     ): Filesystem {
         $password = $this->decrypt($encryptedPassword);
 
-        // LOG TEMPORAL - quitar después
-        error_log('PASSWORD DESENCRIPTADA: [' . $password . ']');
+       
 
         $provider = new SftpConnectionProvider(
             $host,
