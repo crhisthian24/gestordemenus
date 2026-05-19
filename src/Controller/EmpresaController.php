@@ -26,61 +26,66 @@ final class EmpresaController extends AbstractController
     }
 
     #[Route('/new', name: 'app_empresa_new', methods: ['GET', 'POST'])]
-public function new(
-    Request $request,
-    EntityManagerInterface $entityManager,
-    SftpService $sftpService
-): Response {
-    $empresa = new Empresa();
-    $form = $this->createForm(EmpresaType::class, $empresa);
-    $form->handleRequest($request);
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SftpService $sftpService
+    ): Response {
+        $empresa = new Empresa();
+        $form = $this->createForm(EmpresaType::class, $empresa);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        $passwordPlano = $form->get('password')->getData();
-        if ($passwordPlano) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            $passwordPlano = $form->get('password')->getData();
+            if (!$passwordPlano) {
+                $this->addFlash('error', 'La contraseña SFTP es obligatoria');
+                return $this->render('empresa/new.html.twig', [
+                    'empresa' => $empresa,
+                    'form' => $form,
+                ]);
+            }
             $empresa->setPassword($sftpService->encrypt($passwordPlano));
+
+            $entityManager->persist($empresa);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Empresa creada correctamente');
+            return $this->redirectToRoute('app_empresa_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $entityManager->persist($empresa);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Empresa creada correctamente');
-        return $this->redirectToRoute('app_empresa_index', [], Response::HTTP_SEE_OTHER);
+        return $this->render('empresa/new.html.twig', [
+            'empresa' => $empresa,
+            'form' => $form,
+        ]);
     }
 
-    return $this->render('empresa/new.html.twig', [
-        'empresa' => $empresa,
-        'form' => $form,
-    ]);
-}
+    #[Route('/{id}/edit', name: 'app_empresa_edit', methods: ['GET', 'POST'])]
+    public function edit(
+        Request $request,
+        Empresa $empresa,
+        EntityManagerInterface $entityManager,
+        SftpService $sftpService
+    ): Response {
+        $form = $this->createForm(EmpresaType::class, $empresa);
+        $form->handleRequest($request);
 
-#[Route('/{id}/edit', name: 'app_empresa_edit', methods: ['GET', 'POST'])]
-public function edit(
-    Request $request,
-    Empresa $empresa,
-    EntityManagerInterface $entityManager,
-    SftpService $sftpService
-): Response {
-    $form = $this->createForm(EmpresaType::class, $empresa);
-    $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $passwordPlano = $form->get('password')->getData();
+            if ($passwordPlano) {
+                $empresa->setPassword($sftpService->encrypt($passwordPlano));
+            }
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        $passwordPlano = $form->get('password')->getData();
-        if ($passwordPlano) {
-            $empresa->setPassword($sftpService->encrypt($passwordPlano));
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Empresa actualizada correctamente');
+            return $this->redirectToRoute('app_empresa_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Empresa actualizada correctamente');
-        return $this->redirectToRoute('app_empresa_index', [], Response::HTTP_SEE_OTHER);
+        return $this->render('empresa/edit.html.twig', [
+            'empresa' => $empresa,
+            'form' => $form,
+        ]);
     }
-
-    return $this->render('empresa/edit.html.twig', [
-        'empresa' => $empresa,
-        'form' => $form,
-    ]);
-}
 
     #[Route('/{id}', name: 'app_empresa_delete', methods: ['POST'])]
     public function delete(Request $request, Empresa $empresa, EntityManagerInterface $entityManager): Response
