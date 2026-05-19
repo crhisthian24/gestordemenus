@@ -15,4 +15,4 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 RUN rm -rf var/cache/*
 
 EXPOSE 8080
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "public", "public/router.php"]
