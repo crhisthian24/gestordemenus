@@ -38,10 +38,10 @@ final class EmpresaController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $passwordPlano = $form->get('password')->getData();
             if (!$passwordPlano) {
-                $this->addFlash('error', 'La contraseña SFTP es obligatoria');
+                $this->addFlash('error', 'La contraseña SFTP es obligatoria al crear una empresa.');
                 return $this->render('empresa/new.html.twig', [
                     'empresa' => $empresa,
-                    'form' => $form,
+                    'form'    => $form,
                 ]);
             }
             $empresa->setPassword($sftpService->encrypt($passwordPlano));
@@ -49,13 +49,13 @@ final class EmpresaController extends AbstractController
             $entityManager->persist($empresa);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Empresa creada correctamente');
+            $this->addFlash('success', 'Empresa creada correctamente.');
             return $this->redirectToRoute('app_empresa_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('empresa/new.html.twig', [
             'empresa' => $empresa,
-            'form' => $form,
+            'form'    => $form,
         ]);
     }
 
@@ -77,23 +77,26 @@ final class EmpresaController extends AbstractController
 
             $entityManager->flush();
 
-            $this->addFlash('success', 'Empresa actualizada correctamente');
+            $this->addFlash('success', 'Empresa actualizada correctamente.');
             return $this->redirectToRoute('app_empresa_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('empresa/edit.html.twig', [
             'empresa' => $empresa,
-            'form' => $form,
+            'form'    => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_empresa_delete', methods: ['POST'])]
-    public function delete(Request $request, Empresa $empresa, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$empresa->getId(), $request->getPayload()->getString('_token'))) {
+    public function delete(
+        Request $request,
+        Empresa $empresa,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if ($this->isCsrfTokenValid('delete' . $empresa->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($empresa);
             $entityManager->flush();
-            $this->addFlash('success', 'Empresa eliminada correctamente');
+            $this->addFlash('success', 'Empresa eliminada correctamente.');
         }
 
         return $this->redirectToRoute('app_empresa_index', [], Response::HTTP_SEE_OTHER);

@@ -21,9 +21,10 @@ class EmpresaType extends AbstractType
             ->add('puerto', NumberType::class)
             ->add('usuario', TextType::class)
             ->add('password', PasswordType::class, [
-                'always_empty' => false,
-                'required' => false,
-                'label' => 'Password SFTP',
+                'mapped'       => false,
+                'always_empty' => true,
+                'required'     => false,
+                'label'        => 'Password SFTP (dejar vacío para no cambiar)',
             ])
             ->add('rutaRemota', TextType::class)
             ->add('activo', CheckboxType::class, [
